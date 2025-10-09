@@ -21,7 +21,7 @@ final class Plugin {
 	 * @since 1.0.0
 	 * @var string The addon version.
 	 */
-	const VERSION = '1.0.0';
+	const VERSION = '1.1.0';
 
 	/**
 	 * Minimum Elementor Version
@@ -114,13 +114,17 @@ final class Plugin {
    * Include Files
    * Carica i file necessari per il funzionamento del plugin.
    * 
-   * @since 1.0.0
+   * @since 1.0.0 Aggiunto il Custom Post Type.
+   * @since 1.1.0 Aggiunto modulo campi dinamici.
    * @access private
    */
   private function includes() {
 
     // include il custom post type
     require_once EST_PLUGIN_PATH . 'includes/cpt/class-est-cpt.php';
+
+    // include la classe per i campi dinamici
+    require_once EST_PLUGIN_PATH . 'includes/modules/class-dynamic-fields.php';
 
   }
 
@@ -129,13 +133,17 @@ final class Plugin {
 	 *
 	 * Crea le istanze delle classi.
 	 *
-	 * @since 1.0.0
+	 * @since 1.0.0 Aggiunto il Custom Post Type.
+   * @since 1.1.0 Aggiunto il modulo campi dinamici.
 	 * @access private
 	 */
 	private function init_classes(): void {
 
     // Inizializza il Custom Post Type
 		\Elementor_Sync_Template\Cpt\EST_CPT::instance();
+
+    // Inizializza il modulo per i campi dinamici
+    new \Elementor_Sync_Template\Modules\Dynamic_Fields();
 
 	}
 
@@ -167,7 +175,7 @@ function est_plugin_activation() {
 function est_plugin_deactivation() {
 
 	\flush_rewrite_rules();
-  
+
 }
 
 // Activation/deactivation hooks are registered from the main plugin file.

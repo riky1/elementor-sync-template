@@ -1,8 +1,12 @@
 ### Elementor Sync Templates Changelog ###
 
-### 1.0.0 - Initial Release - 26/09/2025
+### 1.1.0 - 09/10/2025
+
+*   Add: modulo campi dinamici `class-dynamic-fields.php` visualizzati nella TAB Content di Elementor quando si crea/modifica un template.
+
+### 1.0.0 - Initial Release - 09/10/2025
 
 *   Creazione della struttura base del plugin.
-*   Aggiunto Compatibility_Manager class
-*   Aggiunto Custom Post Type `es_template`.
-*   Aggiunto `template-canvas` vuoto per nuovo/modifica template
+*   Add: Compatibility_Manager class
+*   Add: Custom Post Type `es_template`.
+*   Add: `template-canvas` vuoto per nuovo/modifica template
