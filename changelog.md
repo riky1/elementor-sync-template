@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.2.0 - 09/10/2025
+
+*   Add: rest-api per controllo chiavi dinamiche con Postman.
+
 ### 1.1.0 - 09/10/2025
 
 *   Add: modulo campi dinamici `class-dynamic-fields.php` visualizzati nella TAB Content di Elementor quando si crea/modifica un template.

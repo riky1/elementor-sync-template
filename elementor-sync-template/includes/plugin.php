@@ -21,7 +21,7 @@ final class Plugin {
 	 * @since 1.0.0
 	 * @var string The addon version.
 	 */
-	const VERSION = '1.1.0';
+	const VERSION = '1.2.0';
 
 	/**
 	 * Minimum Elementor Version
@@ -116,6 +116,7 @@ final class Plugin {
    * 
    * @since 1.0.0 Aggiunto il Custom Post Type.
    * @since 1.1.0 Aggiunto modulo campi dinamici.
+   * @since 1.2.0 Aggiunto endpoint REST per le chiavi dei template.
    * @access private
    */
   private function includes() {
@@ -125,6 +126,9 @@ final class Plugin {
 
     // include la classe per i campi dinamici
     require_once EST_PLUGIN_PATH . 'includes/modules/class-dynamic-fields.php';
+
+    // include la classe per l'endpoint REST
+    require_once EST_PLUGIN_PATH . 'includes/rest-api/class-template-keys-controller.php';
 
   }
 
