@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.4.0 - 10/10/2025
+
+*   Add: sync-template-widget - widget base - codice di partenza con selettore per il template. 
+
 ### 1.3.0 - 10/10/2025
 
 *   class-dynamic-fields.php - aggiunto repeater ai controlli di Elementor.

@@ -21,7 +21,7 @@ final class Plugin {
 	 * @since 1.0.0
 	 * @var string The addon version.
 	 */
-	const VERSION = '1.3.0';
+	const VERSION = '1.4.0';
 
 	/**
 	 * Minimum Elementor Version
@@ -98,6 +98,7 @@ final class Plugin {
 	 * Fired by `elementor/init` action hook.
 	 *
 	 * @since 1.0.0
+	 * @since 1.4.0 Aggiunto il widget Sync Template.
 	 * @access public
 	 */
 	public function init(): void {
@@ -108,6 +109,9 @@ final class Plugin {
     // Inizializza il Custom Post Type
 		$this->init_classes();
 
+		// Registra il widget.
+		add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+
 	}
 
   /**
@@ -117,6 +121,7 @@ final class Plugin {
    * @since 1.0.0 Aggiunto il Custom Post Type.
    * @since 1.1.0 Aggiunto modulo campi dinamici.
    * @since 1.2.0 Aggiunto endpoint REST per le chiavi dei template.
+   * @since 1.4.0 Aggiunto il widget Sync Template.
    * @access private
    */
   private function includes() {
@@ -129,6 +134,9 @@ final class Plugin {
 
     // include la classe per l'endpoint REST
     require_once EST_PLUGIN_PATH . 'includes/rest-api/class-template-keys-controller.php';
+
+    // include la classe per il widget
+    require_once EST_PLUGIN_PATH . 'includes/widgets/class-sync-template-widget.php';
 
   }
 
@@ -151,6 +159,21 @@ final class Plugin {
 
 	}
 
+	/**
+	 * Register Widgets.
+	 *
+	 * Registra i widget personalizzati in Elementor.
+	 *
+	 * @since 1.4.0
+	 * @access public
+	 * @param \Elementor\Widgets_Manager $widgets_manager Il gestore dei widget di Elementor.
+	 */
+	public function register_widgets( $widgets_manager ): void {
+
+		$widgets_manager->register( new \Elementor_Sync_Template\Widgets\Sync_Template_Widget() );
+
+	}
+
 }
 
 /**
@@ -164,6 +187,7 @@ function est_plugin_activation() {
 
 	// Si assicura che il CPT sia registrato prima di fare il flush.
 	require_once EST_PLUGIN_PATH . 'includes/cpt/class-est-cpt.php';
+	
 	\Elementor_Sync_Template\Cpt\EST_CPT::instance()->register_post_type();
 	\flush_rewrite_rules();
 
