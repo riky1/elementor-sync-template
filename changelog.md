@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.2.1 - 10/10/2025
+
+*   Fix: module class-dynamic-fields.php la classe viene caricata molte volte (per ogni componente di Elementor).
+
 ### 1.2.0 - 09/10/2025
 
 *   Add: rest-api per controllo chiavi dinamiche con Postman.

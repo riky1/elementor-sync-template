@@ -7,6 +7,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * Funzione temporanea di debug per loggare i dati nella console degli errori di PHP.
+ *
+ * @param mixed $data I dati da loggare.
+ */
+function console_log($data) { 
+	error_log(print_r($data, true)); 
+}
+
+/**
  * Class Dynamic_Fields
  *
  * Aggiunge i controlli per la mappatura dei campi dinamici a tutti gli elementi di Elementor.
@@ -20,68 +29,54 @@ class Dynamic_Fields {
 	 * Constructor.
 	 *
 	 * @since 1.1.0
+	 * @since 1.2.1 fix: la classe veniva caricata per ogni componente di Elementor
 	 * @access public
 	 */
 	public function __construct() {
 
 		// Aggiunge il campo per la chiave dinamica a tutti gli elementi.
-		// Questo hook generico permette di intercettare tutte le sezioni.
-		\add_action( 'elementor/element/after_section_end', [ $this, 'add_dynamic_field_controls' ], 10, 2 );
-
+		// Questo hook viene eseguito dopo la sezione degli effetti comuni.
+		// In questo modo, il campo sarà visibile in tutte le sezioni degli elementi
+		add_action( 'elementor/element/common/section_effects/after_section_end', [ $this, 'add_dynamic_field_controls' ], 10, 1 );
 	}
 
 	/**
-	 * Il controllo aggiunge il controllo '_est_dynamic_field_key' all'elemento nel CPT specifico.
-	 * Le chiavi sono salvate nelle impostazioni dell'elemento nel template post meta o nel markup JSON dell'elementor
-	 *
-	 * Controlla ogni sezione e, se è la prima della tab "Contenuto",
-	 * aggiunge la sezione personalizzata subito dopo.
+	 * Aggiunge una nuova sezione di controlli a ogni elemento di Elementor
 	 *
 	 * @since 1.1.0
+	 * @since 1.2.1 fix: post_id non trovato su nuovo template quindi non caricava i controlli
 	 * @access public
 	 * @param \Elementor\Element_Base $element L'elemento che viene modificato.
-	 * @param string $section_id L'ID della sezione corrente.
 	 */
-	public function add_dynamic_field_controls( $element, string $section_id ): void {
+	public function add_dynamic_field_controls( $element ): void {
+
+		console_log('=== Funzione dichiarata === ');
+
+
+		// Esce se l'oggetto non è un'istanza di Element_Base (es. preferenze dell'editor).
+		if ( ! $element instanceof \Elementor\Element_Base ) {
+			return;
+		}
+
+		console_log('=== Istanza di Element_Base === ');
+
 
 		// Ottiene l'ID del post corrente dall'editor di Elementor.
 		$post_id = \Elementor\Plugin::$instance->editor->get_post_id();
 
 		// Se non è nel contesto di un editor di post, esce.
-		if ( ! $post_id ) {
-			return;
-		}
+		// if ( ! $post_id ) {
+		// 	return;
+		// }
 
-		// Controlla se il tipo di post corrente è il CPT. Se non lo è, esce.
-		if ( \Elementor_Sync_Template\Cpt\EST_CPT::POST_TYPE !== get_post_type( $post_id ) ) {
-			return;
-		}
+		console_log('Post ID: ' . $post_id);
 
-		// Previene l'esecuzione su elementi non standard come le preferenze dell'editor.
-		if ( ! $element instanceof \Elementor\Element_Base ) {
-			return;
-		}
-
-		// Controlla se è già stata aggiunta la sezione per questo elemento.
-		$controls = $element->get_controls();
-
-		if ( isset( $controls['_est_dynamic_field_key'] ) ) {
-			return;
-		}
-
-		// Ottiene i dettagli della sezione corrente.
-		$current_section = $element->get_controls( $section_id );
-
-		// Se la sezione non ha una tab (raro) o non è nella tab "Contenuto", esce.
-		if ( empty( $current_section['tab'] ) || \Elementor\Controls_Manager::TAB_CONTENT !== $current_section['tab'] ) {
-			return;
-		}
 
 		// Inizia una nuova sezione di controlli.
 		$element->start_controls_section(
 			'_est_dynamic_field_section',
 			[
-				'label' => '<i class="eicon-sync"></i> ' . __( 'Sync Template Field', 'elementor-sync-template' ),
+				'label' => '<i class="eicon-sync"></i> ' . __( 'Sync Template Key', 'elementor-sync-template' ),
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -94,6 +89,7 @@ class Dynamic_Fields {
 				'type'        => \Elementor\Controls_Manager::TEXT,
 				'label_block' => true,
 				'description' => __( 'Enter a unique key (e.g., "hero_title") to make this element customizable in the Sync Template widget.', 'elementor-sync-template' ),
+				'dynamic'     => [ 'active' => false ], // La chiave stessa non deve essere dinamica.
 			]
 		);
 
