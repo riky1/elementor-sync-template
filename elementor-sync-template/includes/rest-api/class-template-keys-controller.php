@@ -79,6 +79,7 @@ class Template_Keys_Controller {
  	 * Callback to get template keys.
  	 *
    * @since 1.2.0
+	 * @since 1.3.0 add repeater support
  	 * @access public
  	 * @static
  	 * @param WP_REST_Request $request
@@ -87,7 +88,7 @@ class Template_Keys_Controller {
  	public static function get_template_keys( WP_REST_Request $request ): WP_REST_Response {
  		$id = (int) $request->get_param( 'id' );
 
- 		$keys = self::extract_keys_from_template( $id );
+ 		$keys = self::extract_fields_from_template( $id );
 
  		return new WP_REST_Response( [ 'keys' => $keys ], 200 );
  	}
@@ -96,13 +97,14 @@ class Template_Keys_Controller {
  	 * Extract dynamic keys from the Elementor template data.
  	 *
    * @since 1.2.0
+	 * @since 1.3.0 add repeater support
  	 * @access private
  	 * @static
  	 * @param int $template_id
  	 * @return array
  	 */
- 	private static function extract_keys_from_template( int $template_id ): array {
- 		$keys = [];
+ 	private static function extract_fields_from_template( int $template_id ): array {
+ 		$fields = [];
 
  		// Try common storage locations.
  		$data = get_post_meta( $template_id, '_elementor_data', true );
@@ -130,27 +132,36 @@ class Template_Keys_Controller {
 
  		// Use Elementor iterator if available.
  		if ( ! empty( \Elementor\Plugin::$instance->db ) && method_exists( \Elementor\Plugin::$instance->db, 'iterate_data' ) ) {
- 			\Elementor\Plugin::$instance->db->iterate_data( $data, function( $element ) use ( & $keys ) {
+ 			\Elementor\Plugin::$instance->db->iterate_data( $data, function( $element ) use ( & $fields ) {
  				$settings = $element['settings'] ?? [];
- 				if ( ! empty( $settings['_est_dynamic_field_key'] ) ) {
- 					$keys[] = $settings['_est_dynamic_field_key'];
+ 				if ( ! empty( $settings['_est_dynamic_fields_repeater'] ) && is_array( $settings['_est_dynamic_fields_repeater'] ) ) {
+ 					foreach ( $settings['_est_dynamic_fields_repeater'] as $field ) {
+ 						if ( ! empty( $field['key'] ) ) {
+ 							$fields[ $field['key'] ] = $field; // Usa la chiave per evitare duplicati.
+ 						}
+ 					}
  				}
  				return $element;
  			} );
  		} else {
  			// Simple fallback.
  			$iterator = new \RecursiveIteratorIterator( new \RecursiveArrayIterator( $data ) );
- 			foreach ( $iterator as $value ) {
- 				if ( is_array( $value ) && isset( $value['_est_dynamic_field_key'] ) ) {
- 					$keys[] = $value['_est_dynamic_field_key'];
+ 			foreach ( $iterator as $key => $value ) {
+ 				if ( '_est_dynamic_fields_repeater' === $key && is_array( $value ) ) {
+ 					foreach ( $value as $field ) {
+ 						if ( ! empty( $field['key'] ) ) {
+ 							$fields[ $field['key'] ] = $field;
+ 						}
+ 					}
  				}
  			}
  		}
 
- 		$keys = array_unique( array_filter( array_map( 'strval', $keys ) ) );
- 		sort( $keys );
+ 		// Rimuovi le chiavi dall'array finale e ordina per chiave.
+ 		$final_fields = array_values( $fields );
+ 		usort( $final_fields, fn( $a, $b ) => strcmp( $a['key'], $b['key'] ) );
 
- 		return $keys;
+ 		return $final_fields;
  	}
 
 }

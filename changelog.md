@@ -1,5 +1,10 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.3.0 - 10/10/2025
+
+*   class-dynamic-fields.php - aggiunto repeater ai controlli di Elementor.
+*   rest-api - aggiunto supporto per repeater.
+
 ### 1.2.1 - 10/10/2025
 
 *   Fix: module class-dynamic-fields.php la classe viene caricata molte volte (per ogni componente di Elementor).

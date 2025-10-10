@@ -45,6 +45,7 @@ class Dynamic_Fields {
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.1 fix: post_id non trovato su nuovo template quindi non caricava i controlli
+	 * @since 1.3.0 aggiunto repeater per campi più versatili.
 	 * @access public
 	 * @param \Elementor\Element_Base $element L'elemento che viene modificato.
 	 */
@@ -74,22 +75,72 @@ class Dynamic_Fields {
 
 		// Inizia una nuova sezione di controlli.
 		$element->start_controls_section(
-			'_est_dynamic_field_section',
+			'_est_dynamic_fields_section',
 			[
-				'label' => '<i class="eicon-sync"></i> ' . __( 'Sync Template Key', 'elementor-sync-template' ),
+				'label' => '<i class="eicon-sync"></i> ' . __( 'Sync Template Field', 'elementor-sync-template' ),
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			]
 		);
 
-		// Aggiunge il campo di testo per la chiave.
-		$element->add_control(
-			'_est_dynamic_field_key',
+		// Aggiunge il controllo Repeater.
+		$repeater = new \Elementor\Repeater();
+
+		$repeater->add_control(
+			'key',
 			[
-				'label'       => __( 'Dynamic Field Key', 'elementor-sync-template' ),
+				'label'       => __( 'Field Key', 'elementor-sync-template' ),
 				'type'        => \Elementor\Controls_Manager::TEXT,
 				'label_block' => true,
-				'description' => __( 'Enter a unique key (e.g., "hero_title") to make this element customizable in the Sync Template widget.', 'elementor-sync-template' ),
-				'dynamic'     => [ 'active' => false ], // La chiave stessa non deve essere dinamica.
+				'description' => __( 'Unique identifier (e.g., "hero_title"). No spaces or special characters.', 'elementor-sync-template' ),
+				'default'     => '',
+				'dynamic'     => [ 'active' => false ], // La chiave non deve essere dinamica.
+			]
+		);
+
+		$repeater->add_control(
+			'label',
+			[
+				'label'       => __( 'Field Label', 'elementor-sync-template' ),
+				'type'        => \Elementor\Controls_Manager::TEXT,
+				'label_block' => true,
+				'description' => __( 'User-friendly name for this field.', 'elementor-sync-template' ),
+				'default'     => '',
+			]
+		);
+
+		$repeater->add_control(
+			'type',
+			[
+				'label'   => __( 'Field Type', 'elementor-sync-template' ),
+				'type'    => \Elementor\Controls_Manager::SELECT,
+				'options' => [
+					'text'     => __( 'Text', 'elementor-sync-template' ),
+					'textarea' => __( 'Textarea', 'elementor-sync-template' ),
+					'image'    => __( 'Image', 'elementor-sync-template' ),
+					'url'      => __( 'URL', 'elementor-sync-template' ),
+				],
+				'default' => 'text',
+			]
+		);
+
+		$repeater->add_control(
+			'description',
+			[
+				'label'       => __( 'Description', 'elementor-sync-template' ),
+				'type'        => \Elementor\Controls_Manager::TEXTAREA,
+				'label_block' => true,
+				'description' => __( 'Instructions for the user filling out this field.', 'elementor-sync-template' ),
+			]
+		);
+
+		$element->add_control(
+			'_est_dynamic_fields_repeater',
+			[
+				'label'       => __( 'Dynamic Fields', 'elementor-sync-template' ),
+				'type'        => \Elementor\Controls_Manager::REPEATER,
+				'fields'      => $repeater->get_controls(),
+				'title_field' => '{{{ label || key || "New Field" }}}',
+				'prevent_empty' => false,
 			]
 		);
 
