@@ -37,47 +37,48 @@ class Dynamic_Fields {
 		// Aggiunge il campo per la chiave dinamica a tutti gli elementi.
 		// Questo hook viene eseguito dopo la sezione degli effetti comuni.
 		// In questo modo, il campo sarà visibile in tutte le sezioni degli elementi
-		add_action( 'elementor/element/common/section_effects/after_section_end', [ $this, 'add_dynamic_field_controls' ], 10, 1 );
+		add_action( 'elementor/element/common/section_effects/after_section_end', [ $this, 'add_dynamic_field_controls' ], 10, 2 );
 	}
 
 	/**
 	 * Aggiunge una nuova sezione di controlli a ogni elemento di Elementor
+	 * quando si sta modificando un post di tipo 'es_template'.
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.1 fix: post_id non trovato su nuovo template quindi non caricava i controlli
-	 * @since 1.3.0 aggiunto repeater per campi più versatili.
+	 * @since 1.3.0 convertito a repeater per campi più versatili.
+	 * @since 1.4.1 fix: la sezione veniva aggiunta anche in contesti non validi (es: modifica pagina)
 	 * @access public
 	 * @param \Elementor\Element_Base $element L'elemento che viene modificato.
 	 */
-	public function add_dynamic_field_controls( $element ): void {
+	public function add_dynamic_field_controls( $element, $args ): void {
 
 		console_log('=== Funzione dichiarata === ');
 
-
 		// Esce se l'oggetto non è un'istanza di Element_Base (es. preferenze dell'editor).
 		if ( ! $element instanceof \Elementor\Element_Base ) {
+			console_log('Esce perché non è Element_Base');
 			return;
 		}
 
-		console_log('=== Istanza di Element_Base === ');
-
-
-		// Ottiene l'ID del post corrente dall'editor di Elementor.
 		$post_id = \Elementor\Plugin::$instance->editor->get_post_id();
+		console_log('Post ID from get_post_id(): ' . $post_id);
 
-		// Se non è nel contesto di un editor di post, esce.
-		// if ( ! $post_id ) {
-		// 	return;
-		// }
+		$post_type = get_post_type( $post_id );
+		console_log('Post Type from get_post_type(): ' . $post_type);
 
-		console_log('Post ID: ' . $post_id);
+		if ( $post_type != 'es_template' ) {
+			console_log('Esce perché non è es_template');
+			return;
+		}
 
+		console_log('Aggiunge i controlli per i campi dinamici');
 
 		// Inizia una nuova sezione di controlli.
 		$element->start_controls_section(
 			'_est_dynamic_fields_section',
 			[
-				'label' => '<i class="eicon-sync"></i> ' . __( 'Sync Template Field', 'elementor-sync-template' ),
+				'label' => __( 'Sync Template Field', 'elementor-sync-template' ),
 				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
 			]
 		);
@@ -146,5 +147,6 @@ class Dynamic_Fields {
 
 		// Termina la sezione di controlli.
 		$element->end_controls_section();
+
 	}
 }

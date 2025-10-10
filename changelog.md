@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.4.1 - 10/10/2025
+
+*   Fix: la sezione 'Sync template' viene aggiunta anche in contesti non validi (es: modifica pagina).
+
 ### 1.4.0 - 10/10/2025
 
 *   Add: sync-template-widget - widget base - codice di partenza con selettore per il template. 
