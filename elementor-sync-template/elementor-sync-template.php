@@ -3,7 +3,7 @@
  * Plugin Name:   Elementor Sync Template
  * Description:   Crea template riutilizzabili e sincronizzati con Elementor, con la possibilità di personalizzare i contenuti per ogni pagina.
  * Plugin URI:    https://github.com/riky1/elementor-sync-template.git
- * Version:       1.4.2
+ * Version:       1.4.3
  * Author:        riky1
  * Author URI:    https://example.com/
  * License:       GPL-2.0+

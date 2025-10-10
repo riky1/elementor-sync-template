@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.4.3 - 10/10/2025
+
+*   Add: logica di rendering con override dinamici.
+
 ### 1.4.2 - 10/10/2025
 
 *   Add: repeater nel widget per i campi dinamici.
