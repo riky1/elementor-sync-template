@@ -74,6 +74,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 * Register widget controls.
 	 *
 	 * @since 1.4.0
+   * @since 1.4.2 Aggiunto repeater per i campi dinamici.
 	 * @access protected
 	 */
 	protected function _register_controls(): void {
@@ -98,7 +99,49 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 
 		$this->end_controls_section();
 
-		// Qui andrà il codice per aggiungere la sezione per i campi dinamici.
+		// Sezione per inserire i valori dei campi dinamici.
+		$this->start_controls_section(
+			'section_dynamic_overrides',
+			[
+				'label'     => __( 'Dynamic Overrides', 'elementor-sync-template' ),
+				'tab'       => \Elementor\Controls_Manager::TAB_CONTENT,
+				'condition' => [
+					'template_id!' => '', // Mostra questa sezione solo se è stato scelto un template.
+				],
+			]
+		);
+
+		$repeater = new \Elementor\Repeater();
+
+		$repeater->add_control(
+			'override_key',
+			[
+				'label'       => __( 'Field Key', 'elementor-sync-template' ),
+				'type'        => \Elementor\Controls_Manager::TEXT,
+				'description' => __( 'Enter the exact key of the field to override (e.g., "hero_title").', 'elementor-sync-template' ),
+			]
+		);
+
+		$repeater->add_control(
+			'override_value',
+			[
+				'label' => __( 'Field Value', 'elementor-sync-template' ),
+				'type'  => \Elementor\Controls_Manager::WYSIWYG, // WYSIWYG è molto versatile.
+			]
+		);
+
+		$this->add_control(
+			'dynamic_overrides',
+			[
+				'label'         => __( 'Field Overrides', 'elementor-sync-template' ),
+				'type'          => \Elementor\Controls_Manager::REPEATER,
+				'fields'        => $repeater->get_controls(),
+				'title_field'   => '{{{ override_key }}}',
+				'prevent_empty' => false,
+			]
+		);
+
+		$this->end_controls_section();
 	}
 
 	/**
