@@ -16,6 +16,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Sync_Template_Widget extends \Elementor\Widget_Base {
 
 	/**
+	 * Constructor.
+	 *
+	 * @since 1.4.4
+	 * @access public
+	 */
+	public function __construct($data = [], $args = null) {
+		parent::__construct($data, $args);
+
+		wp_register_script( 'est-script-handle', EST_PLUGIN_URL . 'assets/js/est-editor.js', [ 'elementor-frontend' ], '1.0.0', true );
+   }
+
+	/**
 	 * Mappa temporanea per le sostituzioni dei campi.
 	 *
 	 * @since 1.4.3
@@ -77,6 +89,17 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	public function get_keywords(): array {
 		return [ 'sync', 'template', 'reusable', 'dynamic', 'est' ];
 	}
+
+	/**
+	 * Get widget script dependencies.
+	 *
+	 * @since 1.4.4
+	 * @access public
+	 * @return array Widget script dependencies.
+	 */
+	public function get_script_depends() {
+    return [ 'est-script-handle' ];
+  }
 
 	/**
 	 * Register widget controls.

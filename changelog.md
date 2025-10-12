@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.4.4 - 12/10/2025
+
+*   Add: est-editor.js
+
 ### 1.4.3 - 10/10/2025
 
 *   Add: logica di rendering con override dinamici.
