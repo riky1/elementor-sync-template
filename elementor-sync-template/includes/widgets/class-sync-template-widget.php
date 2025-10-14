@@ -16,18 +16,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Sync_Template_Widget extends \Elementor\Widget_Base {
 
 	/**
-	 * Constructor.
-	 *
-	 * @since 1.4.4
-	 * @access public
-	 */
-	public function __construct($data = [], $args = null) {
-		parent::__construct($data, $args);
-
-		wp_register_script( 'est-script-handle', EST_PLUGIN_URL . 'assets/js/est-editor.js', [ 'elementor-frontend' ], '1.0.0', true );
-   }
-
-	/**
 	 * Mappa temporanea per le sostituzioni dei campi.
 	 *
 	 * @since 1.4.3
@@ -94,18 +82,20 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 * Get widget script dependencies.
 	 *
 	 * @since 1.4.4
+	 * @since 1.5.0 change name
 	 * @access public
 	 * @return array Widget script dependencies.
 	 */
-	public function get_script_depends() {
-    return [ 'est-script-handle' ];
-  }
+	public function get_script_depends(): array {
+		return [ 'est-editor' ];
+	}
 
 	/**
 	 * Register widget controls.
 	 *
 	 * @since 1.4.0
    * @since 1.4.2 Aggiunto repeater per i campi dinamici.
+   * @since 1.5.0 Logica di popolamento delegata a JS.
 	 * @access protected
 	 */
 	protected function _register_controls(): void {
@@ -147,27 +137,44 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 		$repeater->add_control(
 			'override_key',
 			[
-				'label'       => __( 'Field Key', 'elementor-sync-template' ),
+				'label'   => __( 'Field Key', 'elementor-sync-template' ),
+				'type'    => \Elementor\Controls_Manager::TEXT,
+				'classes' => 'elementor-control-hidden',
+				'default' => '',
+			]
+		);
+
+		$repeater->add_control(
+			'_override_label',
+			[
+				'label'       => __( 'Field', 'elementor-sync-template' ),
 				'type'        => \Elementor\Controls_Manager::TEXT,
-				'description' => __( 'Enter the exact key of the field to override (e.g., "hero_title").', 'elementor-sync-template' ),
+				'label_block' => true,
+				'dynamic'     => [ 'active' => false ],
+				'classes'     => 'elementor-control-title',
+				'render_type' => 'ui',
+				'default'     => '',
 			]
 		);
 
 		$repeater->add_control(
 			'override_value',
 			[
-				'label' => __( 'Field Value', 'elementor-sync-template' ),
-				'type'  => \Elementor\Controls_Manager::WYSIWYG, // WYSIWYG è molto versatile.
+				'label'      => __( 'Value', 'elementor-sync-template' ),
+				'type'       => \Elementor\Controls_Manager::WYSIWYG,
+				'show_label' => false,
+				'default'    => '',
 			]
 		);
 
 		$this->add_control(
 			'dynamic_overrides',
 			[
-				'label'         => __( 'Field Overrides', 'elementor-sync-template' ),
+				'label'         => __( 'Fields', 'elementor-sync-template' ),
 				'type'          => \Elementor\Controls_Manager::REPEATER,
 				'fields'        => $repeater->get_controls(),
-				'title_field'   => '{{{ override_key }}}',
+				'title_field'   => '{{{ _override_label || override_key || "Field" }}}',
+				'classes'     => 'est-dynamic-overrides-fields',
 				'prevent_empty' => false,
 			]
 		);

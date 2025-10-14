@@ -191,7 +191,7 @@ final class Plugin {
 	 * @access public
 	 */
 	public function enqueue_editor_scripts(): void {
-		wp_enqueue_script( 'est-editor', EST_PLUGIN_URL . 'assets/js/est-editor.js', [ 'elementor-editor', 'wp-api-fetch', 'jquery' ], '1.4.5', true );
+		wp_enqueue_script( 'est-editor', EST_PLUGIN_URL . 'assets/js/est-editor.js', [ 'elementor-editor', 'wp-api-fetch', 'jquery' ], '1.5.0', true );
 	}
 
 	/**
@@ -207,7 +207,7 @@ final class Plugin {
 			'est-editor',
 			EST_PLUGIN_URL . 'assets/css/est-editor.css',
 			[],
-			'1.4.5'
+			'1.5.0'
 		);
 	}
 }

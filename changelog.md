@@ -1,5 +1,13 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.5.0 - 14/10/2025
+
+*   Add: logica js per popolamento automatico delle chiavi.
+
+### 1.4.5 - 14/10/2025
+
+*   Add: js + css admin support.
+
 ### 1.4.4 - 12/10/2025
 
 *   Add: est-editor.js

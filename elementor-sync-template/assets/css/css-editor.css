@@ -1,3 +1,7 @@
 /**
  * @since 1.4.5
  */
+
+.est-loading-keys .elementor-control-section_dynamic_overrides {
+  display: none;
+}
