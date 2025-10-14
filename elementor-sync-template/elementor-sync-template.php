@@ -3,7 +3,7 @@
  * Plugin Name:   Elementor Sync Template
  * Description:   Crea template riutilizzabili e sincronizzati con Elementor, con la possibilità di personalizzare i contenuti per ogni pagina.
  * Plugin URI:    https://github.com/riky1/elementor-sync-template.git
- * Version:       1.4.4
+ * Version:       1.4.5
  * Author:        riky1
  * Author URI:    https://example.com/
  * License:       GPL-2.0+
@@ -21,11 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-// Main plugin file path constant – used by activation/deactivation hooks.
-if ( ! defined( 'EST_PLUGIN_FILE' ) ) {
-    define( 'EST_PLUGIN_FILE', __FILE__ );
-}
+define( 'EST_VERSION', '1.4.5' );
 
+define( 'EST_PLUGIN_FILE', __FILE__ );
 define( 'EST_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'EST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 
@@ -33,18 +31,13 @@ define( 'EST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
  * Initialize the plugin.
  * 
  * @since 1.0.0
- * @access public
- * @return void
  */
-// Ensure main plugin code (classes and activation callbacks) is available
-// at load time so activation/deactivation callbacks can be called by WP.
 require_once __DIR__ . '/includes/plugin.php';
-
-// Define version constant from the main plugin class
-define( 'EST_VERSION', \Elementor_Sync_Template\Plugin::VERSION );
 
 /**
  * Initialize the plugin.
+ * 
+ * @since 1.0.0
  */
 function elementor_sync_template() {
 

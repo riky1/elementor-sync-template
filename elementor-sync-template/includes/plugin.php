@@ -21,7 +21,7 @@ final class Plugin {
 	 * @since 1.0.0
 	 * @var string The addon version.
 	 */
-	const VERSION = '1.4.4';
+	// const VERSION = '1.4.4';
 
 	/**
 	 * Minimum Elementor Version
@@ -99,6 +99,7 @@ final class Plugin {
 	 *
 	 * @since 1.0.0
 	 * @since 1.4.0 Aggiunto il widget Sync Template.
+	 * @since 1.4.5 Aggiunto scripts + style
 	 * @access public
 	 */
 	public function init(): void {
@@ -111,6 +112,12 @@ final class Plugin {
 
 		// Registra il widget.
 		add_action( 'elementor/widgets/register', [ $this, 'register_widgets' ] );
+
+		// Registra gli script per l'editor, pronti per essere caricati on-demand.
+		add_action( 'elementor/editor/after_enqueue_scripts', [ $this, 'enqueue_editor_scripts' ] );
+
+		// Registra gli stili per l'editor.
+		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'enqueue_editor_styles' ] );
 
 	}
 
@@ -174,6 +181,35 @@ final class Plugin {
 
 	}
 
+	/**
+	 * Register Editor Scripts.
+	 *
+	 * Registra gli script JS necessari per l'editor di Elementor.
+	 * Vengono registrati qui e poi caricati dal widget solo quando necessario.
+	 *
+	 * @since 1.4.5
+	 * @access public
+	 */
+	public function enqueue_editor_scripts(): void {
+		wp_enqueue_script( 'est-editor', EST_PLUGIN_URL . 'assets/js/est-editor.js', [ 'elementor-editor', 'wp-api-fetch', 'jquery' ], '1.4.5', true );
+	}
+
+	/**
+	 * Enqueue Editor Styles.
+	 *
+	 * Carica i file CSS necessari per l'editor di Elementor.
+	 *
+	 * @since 1.4.5
+	 * @access public
+	 */
+	public function enqueue_editor_styles(): void {
+		wp_enqueue_style(
+			'est-editor',
+			EST_PLUGIN_URL . 'assets/css/est-editor.css',
+			[],
+			'1.4.5'
+		);
+	}
 }
 
 /**
