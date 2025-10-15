@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.5.3 - 15/10/2025
+
+*   Feat: complete refactor est-editor.js.
+
 ### 1.5.2 - 15/10/2025
 
 *   Style: refactor est-editor.js.
