@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.5.2 - 15/10/2025
+
+*   Style: refactor est-editor.js.
+
 ### 1.5.1 - 15/10/2025
 
 *   Fix: popolamento repeater - cancella gli override se il pannello viene chiuso e riaperto.

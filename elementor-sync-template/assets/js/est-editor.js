@@ -11,15 +11,16 @@ console.log('EST: est-editor.js caricato correttamente');
  * Gestisce la logica dell'editor per il widget Sync Template.
  *
  * @since 1.5.0
+ * @since 1.5.2 some digit
  */
 class SyncTemplateEditor {
 
   constructor(panel, model, view) {
     this.panel = panel;
     this.model = model;
-    this.view = view;
+    this.view  = view;
     this.fetchedKeys = null; // Contiene le chiavi recuperate, pronte per essere renderizzate.
-    this.isFetching = false; // Flag per evitare chiamate multiple.
+    this.isFetching  = false; // Flag per evitare chiamate multiple.
     this.isPopulated = false; // Flag per evitare di ripopolare il repeater se è già popolato
 
     this.init();
@@ -29,6 +30,7 @@ class SyncTemplateEditor {
    * Inizializza gli eventi.
    * 
    * @since 1.5.0
+   * @since 1.5.2 some digit
    */
   init() {
     console.log('EST: init()');
@@ -47,9 +49,9 @@ class SyncTemplateEditor {
       panelWrapper.addEventListener('mousedown', (event) => {
 
         // Controlla se l'evento è partito dalla sezione 'dynamic overrides'.
-        const sectionHeader = event.target.closest('.elementor-control-section_dynamic_overrides');
+        const sectionOverrides = event.target.closest('.elementor-control-section_dynamic_overrides');
         
-        if (sectionHeader) {
+        if (sectionOverrides) {
           this.onSectionOpen();
         }
       });
@@ -120,6 +122,7 @@ class SyncTemplateEditor {
    * Esegue una chiamata REST per ottenere le chiavi dinamiche del template.
    * 
    * @since 1.5.0
+   * @since 1.5.2 some digit
    */
   fetchTemplateKeys(templateId) {
     console.log('EST: fetchTemplateKeys() templateId:', templateId);
@@ -129,21 +132,16 @@ class SyncTemplateEditor {
       return;
     }
 
-    if (this.isFetching) return;
+    if (this.isFetching) {
+      return;
+    }
+
     this.isFetching = true;
 
     console.log('EST: Chiamata API per template ID:', templateId);
 
     // Aggiunge una classe al contenitore del pannello per nascondere la sezione tramite CSS.
     this.panel.el.classList.add('est-loading-keys');
-    
-    const repeaterControl = this.panel.el.querySelector(
-      '.elementor-control-dynamic_overrides'
-    );
-
-    if (repeaterControl) {
-      repeaterControl.classList.add('elementor-loading');
-    }
 
     wp.apiFetch({ path: 'est/v1/templates/' + templateId + '/keys' })
       .then((data) => {
@@ -164,8 +162,6 @@ class SyncTemplateEditor {
 
         // Rimuove la classe dal contenitore per mostrare di nuovo la sezione.
         this.panel.el.classList.remove('est-loading-keys');
-        if (repeaterControl)
-          repeaterControl.classList.remove('elementor-loading');
 
       });
   }
