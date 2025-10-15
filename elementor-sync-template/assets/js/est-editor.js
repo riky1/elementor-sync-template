@@ -29,9 +29,12 @@ class SyncTemplateEditor {
   /**------------------------------------------
    * INIT
    * @since 1.5.3
+   * @since 1.5.4 - add css loader
    * ------------------------------------------ */
   init() {
     console.log('[EST] === INIZIALIZZAZIONE EDITOR ===');
+
+    this.panel.el.classList.add('est-loaded');
 
     // 1. Carica subito le chiavi se un template è già selezionato
     const initialTemplateId = this.model.get('settings').get('template_id');
@@ -122,6 +125,7 @@ class SyncTemplateEditor {
   /**------------------------------------------
    * FETCH KEYS
    * @since 1.5.3
+   * @since 1.5.4 - add css loader
    * ------------------------------------------ */
   fetchTemplateKeys(templateId) {
     if (!templateId || this.state.isFetching) return;
@@ -141,6 +145,7 @@ class SyncTemplateEditor {
       .finally(() => {
         this.state.isFetching = false;
         this.panel.el.classList.remove('est-loading-keys');
+        this.panel.el.classList.add('est-loaded');
       });
   }
 

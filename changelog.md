@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.5.4 - 15/10/2025
+
+*   Style: add css loader to est-editor.
+
 ### 1.5.3 - 15/10/2025
 
 *   Feat: complete refactor est-editor.js.

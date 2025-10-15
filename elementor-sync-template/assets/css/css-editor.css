@@ -1,7 +1,57 @@
 /**
- * @since 1.4.5
+ * @since 1.5.4
  */
 
-.est-loading-keys .elementor-control-section_dynamic_overrides {
+.elementor-control-section_dynamic_overrides {
   display: none;
+}
+
+.est-loaded .elementor-control-section_dynamic_overrides {
+  display: block;
+}
+
+/* Stato di caricamento delle chiavi del template */
+.est-loading-keys {
+  position: relative;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Spinner semplice durante il caricamento */
+.est-loading-keys::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 24px;
+  height: 24px;
+  border: 3px solid #ddd;
+  border-top-color: #0073aa; /* colore admin WP */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: est-spin 1s linear infinite;
+}
+
+/* Stato di errore */
+.est-loading-error {
+  border: 1px solid #d63638; /* rosso WordPress */
+  background-color: #fef0ef;
+  padding: 8px;
+  border-radius: 4px;
+}
+
+.est-loading-error::before {
+  content: "⚠️ Errore nel caricamento delle chiavi del template";
+  display: block;
+  color: #d63638;
+  font-size: 13px;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+/* Animazione per lo spinner */
+@keyframes est-spin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
