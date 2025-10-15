@@ -96,6 +96,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 * @since 1.4.0
    * @since 1.4.2 Aggiunto repeater per i campi dinamici.
    * @since 1.5.0 Logica di popolamento delegata a JS.
+	 * @since 1.5.5 Modifiche ai controlli
 	 * @access protected
 	 */
 	protected function _register_controls(): void {
@@ -139,30 +140,31 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 			[
 				'label'   => __( 'Field Key', 'elementor-sync-template' ),
 				'type'    => \Elementor\Controls_Manager::TEXT,
-				'classes' => 'elementor-control-hidden',
+				'classes' => 'est-control-disabled',
 				'default' => '',
+				'separator' => 'after',
 			]
 		);
 
-		$repeater->add_control(
-			'_override_label',
-			[
-				'label'       => __( 'Field', 'elementor-sync-template' ),
-				'type'        => \Elementor\Controls_Manager::TEXT,
-				'label_block' => true,
-				'dynamic'     => [ 'active' => false ],
-				'classes'     => 'elementor-control-title',
-				'render_type' => 'ui',
-				'default'     => '',
-			]
-		);
+		// $repeater->add_control(
+		// 	'_override_label',
+		// 	[
+		// 		'label'       => __( 'Field', 'elementor-sync-template' ),
+		// 		'type'        => \Elementor\Controls_Manager::TEXT,
+		// 		'label_block' => true,
+		// 		'dynamic'     => [ 'active' => false ],
+		// 		'classes'     => 'elementor-control-title',
+		// 		'render_type' => 'ui',
+		// 		'default'     => '',
+		// 	]
+		// );
 
 		$repeater->add_control(
 			'override_value',
 			[
 				'label'      => __( 'Value', 'elementor-sync-template' ),
 				'type'       => \Elementor\Controls_Manager::WYSIWYG,
-				'show_label' => false,
+				'show_label' => true,
 				'default'    => '',
 			]
 		);

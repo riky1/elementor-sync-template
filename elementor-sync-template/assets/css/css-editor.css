@@ -1,5 +1,6 @@
 /**
  * @since 1.5.4
+ * @since 1.5.5 - add .est-control-disabled
  */
 
 .elementor-control-section_dynamic_overrides {
@@ -54,4 +55,13 @@
   to {
     transform: translate(-50%, -50%) rotate(360deg);
   }
+}
+
+/**
+ * @since 1.5.5
+ */
+.est-control-disabled input {
+  pointer-events: none;
+  color: var(--e-a-color-txt-muted);
+  /* background-color: var(--e-a-btn-bg-disabled); */
 }

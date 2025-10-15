@@ -30,11 +30,12 @@ class SyncTemplateEditor {
    * INIT
    * @since 1.5.3
    * @since 1.5.4 - add css loader
+   * @since 1.5.5 - fix classe .est-loaded non viene eliminata al caricamento
    * ------------------------------------------ */
   init() {
     console.log('[EST] === INIZIALIZZAZIONE EDITOR ===');
 
-    this.panel.el.classList.add('est-loaded');
+    this.panel.el.classList.remove('est-loaded');
 
     // 1. Carica subito le chiavi se un template è già selezionato
     const initialTemplateId = this.model.get('settings').get('template_id');

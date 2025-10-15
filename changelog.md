@@ -1,5 +1,11 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.5.5
+
+*   Style: est-editor.css: add add .est-control-disabled
+*   Fix: est-editor.js: classe est-loaded viene aggiunta subito
+*   Widget: piccole modifiche ai controlli
+
 ### 1.5.4 - 15/10/2025
 
 *   Style: add css loader to est-editor.
