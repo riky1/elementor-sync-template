@@ -2,6 +2,7 @@
 
 /**
  * @since 1.5.0
+ * @since 1.5.1 fix popolamento repeater - cancella gli override se il pannello viene chiuso e riaperto
  */
 
 console.log('EST: est-editor.js caricato correttamente');
@@ -19,6 +20,7 @@ class SyncTemplateEditor {
     this.view = view;
     this.fetchedKeys = null; // Contiene le chiavi recuperate, pronte per essere renderizzate.
     this.isFetching = false; // Flag per evitare chiamate multiple.
+    this.isPopulated = false; // Flag per evitare di ripopolare il repeater se è già popolato
 
     this.init();
   }
@@ -65,6 +67,7 @@ class SyncTemplateEditor {
    * Chiamato quando l'utente cambia il template selezionato.
    * 
    * @since 1.5.0
+   * @since 1.5.1 fix ripopolamento repeater
    */
   onTemplateChange(model, newTemplateId) {
     console.log(
@@ -74,6 +77,7 @@ class SyncTemplateEditor {
 
     this.fetchedKeys = null; // Resetta le chiavi precedenti.
     this.fetchTemplateKeys(newTemplateId);
+    this.isPopulated = false;
   }
 
   /**
@@ -89,16 +93,6 @@ class SyncTemplateEditor {
     if (this.fetchedKeys === null) {
       return; // Non ci sono dati da mostrare.
     }
-
-    // Controlla se il repeater è già visibile (sezione già aperta).
-    // const repeaterView = this.getRepeaterView();
-
-    // if (repeaterView) {
-    //   console.log('EST: Repeater già trovato. Aggiornamento in corso...');
-      
-    //   this.updateRepeater(this.fetchedKeys);
-    //   return;
-    // }
 
     // Se il repeater non è ancora visibile, usa un MutationObserver per attenderlo.
     const observer = new MutationObserver((mutations, obs) => {
@@ -147,7 +141,9 @@ class SyncTemplateEditor {
       '.elementor-control-dynamic_overrides'
     );
 
-    if (repeaterControl) repeaterControl.classList.add('elementor-loading');
+    if (repeaterControl) {
+      repeaterControl.classList.add('elementor-loading');
+    }
 
     wp.apiFetch({ path: 'est/v1/templates/' + templateId + '/keys' })
       .then((data) => {
@@ -200,6 +196,7 @@ class SyncTemplateEditor {
    * Aggiorna il repeater 'dynamic_overrides' con le nuove chiavi.
    * 
    * @since 1.5.0
+   * @since 1.5.1 fix ripopolamento repeater
    */
   updateRepeater(keys) {
 
@@ -223,6 +220,11 @@ class SyncTemplateEditor {
       return;
     }
 
+    // Se il repeater è già popolato esce
+    if (this.isPopulated) {
+      return;
+    }
+
     // 3. Salvataggio dei valori esistenti.
 
     console.log('EST: Aggiornamento repeater con', keys.length, 'chiavi.');
@@ -243,6 +245,8 @@ class SyncTemplateEditor {
 
     // Controlla se ci sono nuove chiavi da aggiungere.
     if (keys.length > 0) {
+
+      this.isPopulated = true;
 
       // Itera sul nuovo array di chiavi (keys) ricevuto dalla chiamata API.
       keys.forEach((field) => {

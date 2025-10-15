@@ -21,7 +21,7 @@ final class Plugin {
 	 * @since 1.0.0
 	 * @var string The addon version.
 	 */
-	// const VERSION = '1.4.4';
+	// const VERSION = '1.5.1';
 
 	/**
 	 * Minimum Elementor Version
@@ -118,7 +118,6 @@ final class Plugin {
 
 		// Registra gli stili per l'editor.
 		add_action( 'elementor/editor/after_enqueue_styles', [ $this, 'enqueue_editor_styles' ] );
-
 	}
 
   /**
@@ -191,7 +190,7 @@ final class Plugin {
 	 * @access public
 	 */
 	public function enqueue_editor_scripts(): void {
-		wp_enqueue_script( 'est-editor', EST_PLUGIN_URL . 'assets/js/est-editor.js', [ 'elementor-editor', 'wp-api-fetch', 'jquery' ], '1.5.0', true );
+		wp_enqueue_script( 'est-editor', EST_PLUGIN_URL . 'assets/js/est-editor.js', [ 'elementor-editor', 'wp-api-fetch', 'jquery' ], EST_VERSION, true );
 	}
 
 	/**
@@ -207,7 +206,7 @@ final class Plugin {
 			'est-editor',
 			EST_PLUGIN_URL . 'assets/css/est-editor.css',
 			[],
-			'1.5.0'
+			EST_VERSION
 		);
 	}
 }

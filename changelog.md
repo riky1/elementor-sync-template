@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.5.1 - 15/10/2025
+
+*   Fix: popolamento repeater - cancella gli override se il pannello viene chiuso e riaperto.
+
 ### 1.5.0 - 14/10/2025
 
 *   Add: logica js per popolamento automatico delle chiavi.
