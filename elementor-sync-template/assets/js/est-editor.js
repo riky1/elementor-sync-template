@@ -95,6 +95,7 @@ class SyncTemplateEditor {
 
       const observer = new MutationObserver(() => {
         const found = this.getRepeaterView();
+
         if (found) {
           observer.disconnect();
           resolve(found);
@@ -156,16 +157,20 @@ class SyncTemplateEditor {
    * ------------------------------------------ */
   getRepeaterView() {
     const controlView = elementor.getPanelView().getCurrentPageView();
+
     if (!controlView || !controlView.collection) return null;
+
     const repeaterModel = controlView.collection.findWhere({ name: 'dynamic_overrides' });
     return repeaterModel ? controlView.children.findByModelCid(repeaterModel.cid) : null;
   }
 
   /**------------------------------------------
    * UPDATE REPEATER
+   * Popola dinamicamente i campi di override nel widget "Sync Template" 
    * @since 1.5.3
    * @since 1.6.0 Aggiunto controlli condizionali
    * @since 1.6.1 Aggiunto controllo wysiwyg 
+   * @since 1.7.0 passaggio da KEY a ID
    * ------------------------------------------ */
   updateRepeater(keys) {
     const repeaterView = this.getRepeaterView();
@@ -174,35 +179,65 @@ class SyncTemplateEditor {
     if (this.state.isPopulated) return;
 
     const collection = repeaterView.collection;
+
+    // 1️. Recupera i valori esistenti nel repeater
     const existingValues = {};
 
     collection.each((m) => {
-      existingValues[m.get('override_key')] = m.get('override_value');
+      existingValues[m.get('override_key')] =
+        m.get('override_value_text') ||
+        m.get('override_value_textarea') ||
+        m.get('override_value_wysiwyg') ||
+        m.get('override_value_image') ||
+        m.get('override_value_url') ||
+        '';
     });
 
+    // 2️. Svuota il repeater
     collection.reset();
 
+    // 3️. Aggiungi solo i campi abilitati come dinamici
     keys.forEach((field) => {
+      if (field.is_dynamic !== 'yes') return; // ignora campi non dinamici
+
+      const overrideKey = field._id; // usa _id come chiave unica
+      const type = field.type || 'text';
+
+      const item = {
+        override_key: overrideKey,
+        override_type: type,
+        _override_label: field.label || overrideKey,
+      };
+
+      // 4️. Imposta il valore corretto in base al tipo
+      switch (type) {
+        case 'textarea':
+          item.override_value_textarea = existingValues[overrideKey] || '';
+          break;
+        case 'wysiwyg':
+          item.override_value_wysiwyg = existingValues[overrideKey] || '';
+          break;
+        case 'image':
+          item.override_value_image = existingValues[overrideKey] || '';
+          break;
+        case 'url':
+          item.override_value_url = existingValues[overrideKey] || '';
+          break;
+        default:
+          item.override_value_text = existingValues[overrideKey] || '';
+      }
+
+      // Mantiene anche l'_id nel repeater
       collection.add({
-        override_key: field.key,
-        override_type: field.type || 'text',
-        _override_label: field.label || field.key,
-        // In base al tipo, puoi preimpostare il campo giusto
-        ...(field.type === 'textarea'
-          ? { override_value_textarea: existingValues[field.key] || '' }
-          : field.type === 'wysiwyg'
-          ? { override_value_wysiwyg: existingValues[field.key] || '' }
-          : field.type === 'image'
-          ? { override_value_image: existingValues[field.key] || '' }
-          : field.type === 'url'
-          ? { override_value_url: existingValues[field.key] || '' }
-          : { override_value_text: existingValues[field.key] || '' }),
+        ...item,
+        _id: field._id,
       });
     });
 
     this.state.isPopulated = true;
-    console.log('[EST] Repeater popolato con', keys.length, 'voci');
+    console.log('[EST] Repeater popolato con', collection.length, 'campi dinamici');
   }
+
 }
 
 /**------------------------------------------

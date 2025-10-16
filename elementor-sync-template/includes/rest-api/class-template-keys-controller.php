@@ -56,15 +56,12 @@ class Template_Keys_Controller {
  	 * @return bool
  	 */
  	public static function permissions_check( WP_REST_Request $request ): bool {
+
  		$id = (int) $request->get_param( 'id' );
- 		if ( ! $id ) {
- 			return false;
- 		}
+ 		if ( ! $id ) return false;
 
  		$post = get_post( $id );
- 		if ( ! $post ) {
- 			return false;
- 		}
+ 		if ( ! $post ) return false;
 
  		// Ensure it's the right post type (our templates CPT).
  		if ( \Elementor_Sync_Template\Cpt\EST_CPT::POST_TYPE !== get_post_type( $post ) ) {
@@ -98,6 +95,7 @@ class Template_Keys_Controller {
  	 *
    * @since 1.2.0
 	 * @since 1.3.0 add repeater support
+	 * @since 1.7.0 change from key to _id 
  	 * @access private
  	 * @static
  	 * @param int $template_id
@@ -111,8 +109,10 @@ class Template_Keys_Controller {
 
  		if ( empty( $data ) ) {
  			$raw = get_post_field( 'post_content', $template_id );
+
  			if ( $raw ) {
  				$json = json_decode( $raw, true );
+
  				if ( is_array( $json ) ) {
  					$data = $json;
  				}
@@ -121,6 +121,7 @@ class Template_Keys_Controller {
 
  		if ( is_string( $data ) ) {
  			$decoded = json_decode( $data, true );
+
  			if ( is_array( $decoded ) ) {
  				$data = $decoded;
  			}
@@ -132,36 +133,55 @@ class Template_Keys_Controller {
 
  		// Use Elementor iterator if available.
  		if ( ! empty( \Elementor\Plugin::$instance->db ) && method_exists( \Elementor\Plugin::$instance->db, 'iterate_data' ) ) {
+
  			\Elementor\Plugin::$instance->db->iterate_data( $data, function( $element ) use ( & $fields ) {
  				$settings = $element['settings'] ?? [];
+
  				if ( ! empty( $settings['_est_dynamic_fields_repeater'] ) && is_array( $settings['_est_dynamic_fields_repeater'] ) ) {
+
  					foreach ( $settings['_est_dynamic_fields_repeater'] as $field ) {
- 						if ( ! empty( $field['key'] ) ) {
- 							$fields[ $field['key'] ] = $field; // Usa la chiave per evitare duplicati.
- 						}
- 					}
+						if ( ! empty( $field['_id'] ) ) {
+							$fields[ $field['_id'] ] = $field; // Usa _id come chiave unica.
+						}
+					}
+
  				}
  				return $element;
  			} );
+
  		} else {
+
  			// Simple fallback.
  			$iterator = new \RecursiveIteratorIterator( new \RecursiveArrayIterator( $data ) );
- 			foreach ( $iterator as $key => $value ) {
- 				if ( '_est_dynamic_fields_repeater' === $key && is_array( $value ) ) {
- 					foreach ( $value as $field ) {
- 						if ( ! empty( $field['key'] ) ) {
- 							$fields[ $field['key'] ] = $field;
- 						}
- 					}
- 				}
- 			}
+
+			foreach ( $iterator as $key => $value ) {
+				if ( '_est_dynamic_fields_repeater' === $key && is_array( $value ) ) {
+
+					foreach ( $value as $field ) {
+						// usa _id, ma lascia compatibilità temporanea con key
+						$field_id = $field['_id'] ?? ( $field['key'] ?? null );
+						if ( ! empty( $field_id ) ) {
+							$fields[ $field_id ] = $field;
+						}
+					}
+
+				}
+			}
  		}
 
- 		// Rimuovi le chiavi dall'array finale e ordina per chiave.
  		$final_fields = array_values( $fields );
- 		usort( $final_fields, fn( $a, $b ) => strcmp( $a['key'], $b['key'] ) );
 
- 		return $final_fields;
+		// Ordina per label o _id
+		// usort(
+		// 	$final_fields,
+		// 	function ( $a, $b ) {
+		// 		$a_label = $a['label'] ?? $a['_id'] ?? '';
+		// 		$b_label = $b['label'] ?? $b['_id'] ?? '';
+		// 		return strcmp( $a_label, $b_label );
+		// 	}
+		// );
+
+		return $final_fields;
  	}
 
 }

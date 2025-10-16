@@ -1,5 +1,12 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.7.0 - 16/10/2025
+
+*   Feat: sostituito chiave per i campi dinamici da `key` a `_id`
+*   Feat: aggiunto switch per impostare i campi dinamici
+*   Feat: refactoring `est-editor.js`, `widget`, `controller`, `rest-api` per cambio da `key` a `_id`
+*   Style: ripristinato button 'Aggiungi elemento' nel repeater del template (da rivedere dopo passaggio da key a _id)
+
 ### 1.6.1 - 16/10/2025
 
 *   Feat: add wysiwyg control

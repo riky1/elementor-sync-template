@@ -51,6 +51,7 @@ class Dynamic_Fields {
 	 * @since 1.4.1 fix: la sezione veniva aggiunta anche in contesti non validi (es: modifica pagina)
 	 * @since 1.5.6 edit controls
 	 * @since 1.6.1 add wysiwyg control + nascosto button 'Aggiungi elemento' dal repeater
+	 * @since 1.7.0 aggiunto switch per utilizzo di ID al posto della KEY
 	 * @access public
 	 * @param \Elementor\Element_Base $element L'elemento che viene modificato.
 	 */
@@ -87,15 +88,16 @@ class Dynamic_Fields {
 		$repeater = new \Elementor\Repeater();
 
 		$repeater->add_control(
-			'key',
+			'is_dynamic',
 			[
-				'label'       => __( 'Field Key', 'elementor-sync-template' ),
-				'type'        => \Elementor\Controls_Manager::TEXT,
-				'label_block' => true,
-				'description' => __( 'Unique identifier (e.g., "hero_title"). No spaces or special characters.', 'elementor-sync-template' ),
-				'default'     => '',
-				'dynamic'     => [ 'active' => false ], // La chiave non deve essere dinamica.,
-				'separator' => 'after',
+				'label'        => __( 'Dynamic?', 'elementor-sync-template' ),
+				'type'         => \Elementor\Controls_Manager::SWITCHER,
+				'label_on'     => __( 'Yes', 'elementor-sync-template' ),
+				'label_off'    => __( 'No', 'elementor-sync-template' ),
+				'return_value' => 'yes',
+				'default'      => '',
+				'description'  => __( 'Activate to make this element dynamically synchronized.', 'elementor-sync-template' ),
+				'separator'    => 'after',
 			]
 		);
 
@@ -108,6 +110,9 @@ class Dynamic_Fields {
 				'description' => __( 'User-friendly name for this field.', 'elementor-sync-template' ),
 				'default'     => '',
 				'separator' => 'before',
+				'condition' => [
+					'is_dynamic' => 'yes',
+				],
 			]
 		);
 
@@ -125,6 +130,9 @@ class Dynamic_Fields {
 				],
 				'default' => 'text',
 				'separator' => 'before',
+				'condition' => [
+					'is_dynamic' => 'yes',
+				],
 			]
 		);
 
@@ -136,6 +144,9 @@ class Dynamic_Fields {
 				'label_block' => true,
 				'description' => __( 'Instructions for the user filling out this field.', 'elementor-sync-template' ),
 				'separator' => 'before',
+				'condition' => [
+					'is_dynamic' => 'yes',
+				],
 			]
 		);
 
@@ -145,19 +156,31 @@ class Dynamic_Fields {
 				'label'       => __( 'Dynamic Fields', 'elementor-sync-template' ),
 				'type'        => \Elementor\Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
-				'title_field' => '{{{ label || key || "Add dynamic field" }}}',
+				'title_field' => '{{{ label || "Add dynamic field" }}}',
 				'prevent_empty' => false,
 				'classes' => 'est-single-item-repeater',
-				'default' => [
-					[
-						'key'   => '',
-						'label' => '',
-						'type'  => 'text',
-						'description' => '',
-					],
-				],
 			]
 		);
+
+		// $element->add_control(
+		// 	'_est_dynamic_fields_repeater',
+		// 	[
+		// 		'label'       => __( 'Dynamic Fields', 'elementor-sync-template' ),
+		// 		'type'        => \Elementor\Controls_Manager::REPEATER,
+		// 		'fields'      => $repeater->get_controls(),
+		// 		'title_field' => '{{{ label || "Add dynamic field" }}}',
+		// 		'prevent_empty' => false,
+		// 		'classes' => 'est-single-item-repeater',
+		// 		'default' => [
+		// 			[
+		// 				'is_dynamic'  => '',
+		// 				'label' => '',
+		// 				'type'  => 'text',
+		// 				'description' => '',
+		// 			],
+		// 		],
+		// 	]
+		// );
 
 		$element->end_controls_section();
 

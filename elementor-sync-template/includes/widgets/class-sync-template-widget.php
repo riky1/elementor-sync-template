@@ -99,9 +99,11 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 * @since 1.5.5 Modifiche ai controlli
 	 * @since 1.6.0 Aggiunto controlli condizionali
 	 * @since 1.6.1 Aggiunto wysiwyg control
+	 * @since 1.7.0 passaggio da KEY a ID
 	 * @access protected
 	 */
 	protected function _register_controls(): void {
+
 		$this->start_controls_section(
 			'section_template',
 			[
@@ -123,7 +125,6 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 
 		$this->end_controls_section();
 
-		// Sezione per inserire i valori dei campi dinamici.
 		$this->start_controls_section(
 			'section_dynamic_overrides',
 			[
@@ -138,12 +139,10 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 		$repeater = new \Elementor\Repeater();
 
 		$repeater->add_control(
-			'override_key',
+			'_id',
 			[
-				'label'   => __( 'Field Key', 'elementor-sync-template' ),
-				'type'    => \Elementor\Controls_Manager::TEXT,
-				'classes' => 'est-control-disabled',
-				'default' => '',
+				'type'    => \Elementor\Controls_Manager::HIDDEN,
+				'default' => '', // verrà popolato lato JS con l’ID del campo
 			]
 		);
 
@@ -230,6 +229,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 * @since 1.4.3 Aggiunta logica di rendering con override dinamici.
 	 * @since 1.6.0 Aggiunto controlli condizinali
 	 * @since 1.6.1 Aggiunto wysiwyg control
+	 * @since 1.7.0 passaggio da KEY a ID
 	 * @access protected
 	 */
 	protected function render(): void {
@@ -250,7 +250,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
     $this->overrides_map = [];
 
     foreach ( $overrides as $item ) {
-			$key   = $item['override_key'] ?? '';
+			$key  = $item['_id'] ?? '';
 			$type  = $item['override_type'] ?? 'text';
 			$value = '';
 
@@ -260,27 +260,25 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 				case 'textarea':
 					$value = $item['override_value_textarea'] ?? '';
 					break;
-
-					case 'wysiwyg':
-						$value = $item['override_value_wysiwyg'] ?? '';
-						break;
-
+				case 'wysiwyg':
+					$value = $item['override_value_wysiwyg'] ?? '';
+					break;
 				case 'image':
 					// Nel caso dell'immagine Elementor salva un array (id, url)
 					$image_data = $item['override_value_image'] ?? null;
+
 					if ( is_array( $image_data ) && ! empty( $image_data['url'] ) ) {
 						$value = $image_data['url'];
 					}
 					break;
-
 				case 'url':
 					// Anche il campo URL di Elementor è un array
 					$url_data = $item['override_value_url'] ?? null;
+
 					if ( is_array( $url_data ) && ! empty( $url_data['url'] ) ) {
 						$value = $url_data['url'];
 					}
 					break;
-
 				default:
 					$value = $item['override_value_text'] ?? '';
 					break;
@@ -333,6 +331,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 * @since 1.4.3
 	 * @since 1.6.0 Aggiunto controlli condizionali
 	 * @since 1.6.1 Aggiunto wysiwyg control
+	 * @since 1.7.0 passaggio da KEY a ID
 	 * @access public
 	 * @param \Elementor\Widget_Base $widget_instance L'istanza del widget che sta per essere renderizzato.
 	 * @return \Elementor\Widget_Base L'istanza del widget, potenzialmente modificata.
@@ -348,7 +347,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
     $fields_to_override = $widget_settings['_est_dynamic_fields_repeater'];
 
     foreach ( $fields_to_override as $field ) {
-			$key  = $field['key'] ?? '';
+			$key  = $field['_id'] ?? '';
 			$type = $field['type'] ?? 'text';
 
 			if ( empty( $key ) || ! isset( $this->overrides_map[ $key ] ) ) {
