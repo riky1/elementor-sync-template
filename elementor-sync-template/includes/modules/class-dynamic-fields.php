@@ -48,6 +48,7 @@ class Dynamic_Fields {
 	 * @since 1.2.1 fix: post_id non trovato su nuovo template quindi non caricava i controlli
 	 * @since 1.3.0 convertito a repeater per campi più versatili.
 	 * @since 1.4.1 fix: la sezione veniva aggiunta anche in contesti non validi (es: modifica pagina)
+	 * @since 1.5.6 edit controls
 	 * @access public
 	 * @param \Elementor\Element_Base $element L'elemento che viene modificato.
 	 */
@@ -57,7 +58,7 @@ class Dynamic_Fields {
 
 		// Esce se l'oggetto non è un'istanza di Element_Base (es. preferenze dell'editor).
 		if ( ! $element instanceof \Elementor\Element_Base ) {
-			console_log('Esce perché non è Element_Base');
+			// console_log('Esce perché non è Element_Base');
 			return;
 		}
 
@@ -67,12 +68,13 @@ class Dynamic_Fields {
 		$post_type = get_post_type( $post_id );
 		console_log('Post Type from get_post_type(): ' . $post_type);
 
+		// Esce se il post type non è 'es_template'.
 		if ( $post_type != 'es_template' ) {
 			console_log('Esce perché non è es_template');
 			return;
 		}
 
-		console_log('Aggiunge i controlli per i campi dinamici');
+		// console_log('Aggiunge i controlli per i campi dinamici');
 
 		// Inizia una nuova sezione di controlli.
 		$element->start_controls_section(
@@ -86,6 +88,7 @@ class Dynamic_Fields {
 		// Aggiunge il controllo Repeater.
 		$repeater = new \Elementor\Repeater();
 
+		// Aggiunge i controlli per i campi dinamici.
 		$repeater->add_control(
 			'key',
 			[
@@ -94,7 +97,8 @@ class Dynamic_Fields {
 				'label_block' => true,
 				'description' => __( 'Unique identifier (e.g., "hero_title"). No spaces or special characters.', 'elementor-sync-template' ),
 				'default'     => '',
-				'dynamic'     => [ 'active' => false ], // La chiave non deve essere dinamica.
+				'dynamic'     => [ 'active' => false ], // La chiave non deve essere dinamica.,
+				'separator' => 'after',
 			]
 		);
 
@@ -106,6 +110,7 @@ class Dynamic_Fields {
 				'label_block' => true,
 				'description' => __( 'User-friendly name for this field.', 'elementor-sync-template' ),
 				'default'     => '',
+				'separator' => 'before',
 			]
 		);
 
@@ -121,6 +126,7 @@ class Dynamic_Fields {
 					'url'      => __( 'URL', 'elementor-sync-template' ),
 				],
 				'default' => 'text',
+				'separator' => 'before',
 			]
 		);
 
@@ -131,6 +137,7 @@ class Dynamic_Fields {
 				'type'        => \Elementor\Controls_Manager::TEXTAREA,
 				'label_block' => true,
 				'description' => __( 'Instructions for the user filling out this field.', 'elementor-sync-template' ),
+				'separator' => 'before',
 			]
 		);
 

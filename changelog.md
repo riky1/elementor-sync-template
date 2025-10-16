@@ -1,6 +1,10 @@
 ### Elementor Sync Templates Changelog ###
 
-### 1.5.5
+### 1.5.6 - 16/10/2025
+
+*   Feat: piccole modifiche ai controlli di class-dynamic-fields.php.
+
+### 1.5.5 - 15/10/2025
 
 *   Style: est-editor.css: add add .est-control-disabled
 *   Fix: est-editor.js: classe est-loaded viene aggiunta subito
