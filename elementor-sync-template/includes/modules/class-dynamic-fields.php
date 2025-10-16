@@ -49,6 +49,7 @@ class Dynamic_Fields {
 	 * @since 1.3.0 convertito a repeater per campi più versatili.
 	 * @since 1.4.1 fix: la sezione veniva aggiunta anche in contesti non validi (es: modifica pagina)
 	 * @since 1.5.6 edit controls
+	 * @since 1.6.1 add wysiwyg control
 	 * @access public
 	 * @param \Elementor\Element_Base $element L'elemento che viene modificato.
 	 */
@@ -122,6 +123,7 @@ class Dynamic_Fields {
 				'options' => [
 					'text'     => __( 'Text', 'elementor-sync-template' ),
 					'textarea' => __( 'Textarea', 'elementor-sync-template' ),
+					'wysiwyg' =>  __( 'Wysiwyg', 'elementor-sync-template' ),
 					'image'    => __( 'Image', 'elementor-sync-template' ),
 					'url'      => __( 'URL', 'elementor-sync-template' ),
 				],

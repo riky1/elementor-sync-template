@@ -98,6 +98,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
    * @since 1.5.0 Logica di popolamento delegata a JS.
 	 * @since 1.5.5 Modifiche ai controlli
 	 * @since 1.6.0 Aggiunto controlli condizionali
+	 * @since 1.6.1 Aggiunto wysiwyg control
 	 * @access protected
 	 */
 	protected function _register_controls(): void {
@@ -177,6 +178,16 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 			]
 		);
 
+		// WYSIWYG
+		$repeater->add_control(
+			'override_value_wysiwyg',
+			[
+				'label'      => __( 'Value (Rich Text)', 'elementor-sync-template' ),
+				'type'       => \Elementor\Controls_Manager::WYSIWYG,
+				'condition'  => [ 'override_type' => 'wysiwyg' ],
+			]
+		);
+
 		// IMAGE
 		$repeater->add_control(
 			'override_value_image',
@@ -218,6 +229,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 * @since 1.4.0
 	 * @since 1.4.3 Aggiunta logica di rendering con override dinamici.
 	 * @since 1.6.0 Aggiunto controlli condizinali
+	 * @since 1.6.1 Aggiunto wysiwyg control
 	 * @access protected
 	 */
 	protected function render(): void {
@@ -248,6 +260,10 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 				case 'textarea':
 					$value = $item['override_value_textarea'] ?? '';
 					break;
+
+					case 'wysiwyg':
+						$value = $item['override_value_wysiwyg'] ?? '';
+						break;
 
 				case 'image':
 					// Nel caso dell'immagine Elementor salva un array (id, url)
@@ -316,6 +332,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 *
 	 * @since 1.4.3
 	 * @since 1.6.0 Aggiunto controlli condizionali
+	 * @since 1.6.1 Aggiunto wysiwyg control
 	 * @access public
 	 * @param \Elementor\Widget_Base $widget_instance L'istanza del widget che sta per essere renderizzato.
 	 * @return \Elementor\Widget_Base L'istanza del widget, potenzialmente modificata.
@@ -349,6 +366,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 			switch ( $type ) {
 				case 'text':
 				case 'textarea':
+				case 'wysiwyg':
 					if ( 'heading' === $widget_name ) {
 						$setting_name = 'title';
 					} elseif ( 'text-editor' === $widget_name ) {

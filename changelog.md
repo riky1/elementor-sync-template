@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.6.1 - 16/10/2025
+
+*   Feat: add wysiwyg control
+
 ### 1.6.0 - 16/10/2025
 
 *   Feat: add conditional control in widget

@@ -165,6 +165,7 @@ class SyncTemplateEditor {
    * UPDATE REPEATER
    * @since 1.5.3
    * @since 1.6.0 Aggiunto controlli condizionali
+   * @since 1.6.1 Aggiunto controllo wysiwyg 
    * ------------------------------------------ */
   updateRepeater(keys) {
     const repeaterView = this.getRepeaterView();
@@ -189,6 +190,8 @@ class SyncTemplateEditor {
         // In base al tipo, puoi preimpostare il campo giusto
         ...(field.type === 'textarea'
           ? { override_value_textarea: existingValues[field.key] || '' }
+          : field.type === 'wysiwyg'
+          ? { override_value_wysiwyg: existingValues[field.key] || '' }
           : field.type === 'image'
           ? { override_value_image: existingValues[field.key] || '' }
           : field.type === 'url'
