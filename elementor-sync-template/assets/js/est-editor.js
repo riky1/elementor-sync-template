@@ -164,6 +164,7 @@ class SyncTemplateEditor {
   /**------------------------------------------
    * UPDATE REPEATER
    * @since 1.5.3
+   * @since 1.6.0 Aggiunto controlli condizionali
    * ------------------------------------------ */
   updateRepeater(keys) {
     const repeaterView = this.getRepeaterView();
@@ -183,8 +184,16 @@ class SyncTemplateEditor {
     keys.forEach((field) => {
       collection.add({
         override_key: field.key,
-        override_value: existingValues[field.key] || '',
+        override_type: field.type || 'text',
         _override_label: field.label || field.key,
+        // In base al tipo, puoi preimpostare il campo giusto
+        ...(field.type === 'textarea'
+          ? { override_value_textarea: existingValues[field.key] || '' }
+          : field.type === 'image'
+          ? { override_value_image: existingValues[field.key] || '' }
+          : field.type === 'url'
+          ? { override_value_url: existingValues[field.key] || '' }
+          : { override_value_text: existingValues[field.key] || '' }),
       });
     });
 

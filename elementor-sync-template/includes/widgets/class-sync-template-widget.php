@@ -97,6 +97,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
    * @since 1.4.2 Aggiunto repeater per i campi dinamici.
    * @since 1.5.0 Logica di popolamento delegata a JS.
 	 * @since 1.5.5 Modifiche ai controlli
+	 * @since 1.6.0 Aggiunto controlli condizionali
 	 * @access protected
 	 */
 	protected function _register_controls(): void {
@@ -142,30 +143,57 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 				'type'    => \Elementor\Controls_Manager::TEXT,
 				'classes' => 'est-control-disabled',
 				'default' => '',
-				'separator' => 'after',
 			]
 		);
 
-		// $repeater->add_control(
-		// 	'_override_label',
-		// 	[
-		// 		'label'       => __( 'Field', 'elementor-sync-template' ),
-		// 		'type'        => \Elementor\Controls_Manager::TEXT,
-		// 		'label_block' => true,
-		// 		'dynamic'     => [ 'active' => false ],
-		// 		'classes'     => 'elementor-control-title',
-		// 		'render_type' => 'ui',
-		// 		'default'     => '',
-		// 	]
-		// );
-
+		// Campo di tipo (nascosto ma utile per condizionare)
 		$repeater->add_control(
-			'override_value',
+			'override_type',
+			[
+				'label'   => __( 'Type', 'elementor-sync-template' ),
+				'type'    => \Elementor\Controls_Manager::HIDDEN,
+				'default' => 'text',
+			]
+		);
+
+		// TEXT
+		$repeater->add_control(
+			'override_value_text',
+			[
+				'label'       => __( 'Value', 'elementor-sync-template' ),
+				'type'        => \Elementor\Controls_Manager::TEXT,
+				'label_block' => true,
+				'condition'   => [ 'override_type' => 'text' ],
+			]
+		);
+
+		// TEXTAREA
+		$repeater->add_control(
+			'override_value_textarea',
 			[
 				'label'      => __( 'Value', 'elementor-sync-template' ),
-				'type'       => \Elementor\Controls_Manager::WYSIWYG,
-				'show_label' => true,
-				'default'    => '',
+				'type'       => \Elementor\Controls_Manager::TEXTAREA,
+				'condition'  => [ 'override_type' => 'textarea' ],
+			]
+		);
+
+		// IMAGE
+		$repeater->add_control(
+			'override_value_image',
+			[
+				'label'      => __( 'Image', 'elementor-sync-template' ),
+				'type'       => \Elementor\Controls_Manager::MEDIA,
+				'condition'  => [ 'override_type' => 'image' ],
+			]
+		);
+
+		// URL
+		$repeater->add_control(
+			'override_value_url',
+			[
+				'label'      => __( 'Link', 'elementor-sync-template' ),
+				'type'       => \Elementor\Controls_Manager::URL,
+				'condition'  => [ 'override_type' => 'url' ],
 			]
 		);
 
@@ -189,43 +217,79 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 *
 	 * @since 1.4.0
 	 * @since 1.4.3 Aggiunta logica di rendering con override dinamici.
+	 * @since 1.6.0 Aggiunto controlli condizinali
 	 * @access protected
 	 */
 	protected function render(): void {
 		$settings = $this->get_settings_for_display();
-		$template_id = $settings['template_id'];
-		$overrides = $settings['dynamic_overrides'] ?? [];
+    $template_id = $settings['template_id'] ?? '';
+    $overrides = $settings['dynamic_overrides'] ?? [];
 
-		if ( empty( $template_id ) ) {
+    if ( empty( $template_id ) ) {
 
 			if ( \Elementor\Plugin::$instance->editor->is_edit_mode() ) {
 				echo '<div class="elementor-alert elementor-alert-warning">' . esc_html__( 'Please select a template.', 'elementor-sync-template' ) . '</div>';
 			}
 
 			return;
-      
-		}
+    }
 
-		// 1. Prepara la mappa delle sostituzioni per una ricerca veloce.
-		$this->overrides_map = wp_list_pluck( $overrides, 'override_value', 'override_key' );
+    // 1. Prepara la mappa delle sostituzioni (multi-type)
+    $this->overrides_map = [];
 
-		// 2. Aggiunge un filtro che si attiverà per ogni widget renderizzato all'interno del template.
-		if ( ! empty( $this->overrides_map ) ) {
+    foreach ( $overrides as $item ) {
+			$key   = $item['override_key'] ?? '';
+			$type  = $item['override_type'] ?? 'text';
+			$value = '';
+
+			if ( ! $key ) continue;
+
+			switch ( $type ) {
+				case 'textarea':
+					$value = $item['override_value_textarea'] ?? '';
+					break;
+
+				case 'image':
+					// Nel caso dell'immagine Elementor salva un array (id, url)
+					$image_data = $item['override_value_image'] ?? null;
+					if ( is_array( $image_data ) && ! empty( $image_data['url'] ) ) {
+						$value = $image_data['url'];
+					}
+					break;
+
+				case 'url':
+					// Anche il campo URL di Elementor è un array
+					$url_data = $item['override_value_url'] ?? null;
+					if ( is_array( $url_data ) && ! empty( $url_data['url'] ) ) {
+						$value = $url_data['url'];
+					}
+					break;
+
+				default:
+					$value = $item['override_value_text'] ?? '';
+					break;
+			}
+
+			if ( $value !== '' ) {
+				$this->overrides_map[ $key ] = $value;
+			}
+    }
+
+    // 2. Aggiunge il filtro se ci sono override
+    if ( ! empty( $this->overrides_map ) ) {
 			add_filter( 'elementor/frontend/widget/before_render', [ $this, 'apply_dynamic_overrides' ], 10, 1 );
-		}
+    }
 
-		// Renderizza il contenuto del template di Elementor.
-		// La funzione get_builder_content_for_display si occupa di renderizzare l'HTML.
-		// Durante la sua esecuzione, il filtro 'before_render' verrà chiamato.
-		echo \Elementor\Plugin::$instance->frontend->get_builder_content_for_display( $template_id );
+    // 3. Renderizza il template selezionato
+    echo \Elementor\Plugin::$instance->frontend->get_builder_content_for_display( $template_id );
 
-		// 3. Rimuove il filtro per non interferire con il resto della pagina.
-		if ( ! empty( $this->overrides_map ) ) {
+    // 4. Rimuove il filtro per non interferire con altri widget
+    if ( ! empty( $this->overrides_map ) ) {
 			remove_filter( 'elementor/frontend/widget/before_render', [ $this, 'apply_dynamic_overrides' ], 10 );
-		}
+    }
 
-		// 4. Pulisce la mappa.
-		$this->overrides_map = [];
+    // 5. Pulisce la mappa
+    $this->overrides_map = [];
 	}
 
 	/**
@@ -251,6 +315,7 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	 * Questa funzione viene chiamata dal filtro 'elementor/frontend/widget/before_render'.
 	 *
 	 * @since 1.4.3
+	 * @since 1.6.0 Aggiunto controlli condizionali
 	 * @access public
 	 * @param \Elementor\Widget_Base $widget_instance L'istanza del widget che sta per essere renderizzato.
 	 * @return \Elementor\Widget_Base L'istanza del widget, potenzialmente modificata.
@@ -258,51 +323,63 @@ class Sync_Template_Widget extends \Elementor\Widget_Base {
 	public function apply_dynamic_overrides( \Elementor\Widget_Base $widget_instance ): \Elementor\Widget_Base {
 		$widget_settings = $widget_instance->get_settings();
 
-		// Controlla se questo widget ha dei campi dinamici definiti.
-		if ( empty( $widget_settings['_est_dynamic_fields_repeater'] ) ) {
+    // Se il widget non ha campi dinamici definiti, esce.
+    if ( empty( $widget_settings['_est_dynamic_fields_repeater'] ) ) {
 			return $widget_instance;
-		}
+    }
 
-		$fields_to_override = $widget_settings['_est_dynamic_fields_repeater'];
+    $fields_to_override = $widget_settings['_est_dynamic_fields_repeater'];
 
-		foreach ( $fields_to_override as $field ) {
-			$key = $field['key'] ?? '';
+    foreach ( $fields_to_override as $field ) {
+			$key  = $field['key'] ?? '';
+			$type = $field['type'] ?? 'text';
 
-			// Se la chiave di questo campo è presente...
-			if ( ! empty( $key ) && isset( $this->overrides_map[ $key ] ) ) {
-
-				$value = $this->overrides_map[ $key ];
-				$type = $field['type'] ?? 'text';
-
-				// Determina quale impostazione del widget deve essere modificata,
-				// considerando sia il tipo di campo che il tipo di widget.
-				$setting_to_change = '';
-				$widget_name = $widget_instance->get_name();
-
-				if ( 'text' === $type || 'textarea' === $type ) {
-
-					if ( 'heading' === $widget_name ) {
-						$setting_to_change = 'title';
-					} elseif ( 'text-editor' === $widget_name ) {
-						$setting_to_change = 'editor';
-					}
-					// Aggiungere qui altri 'elseif' per altri widget di testo (es. 'button' -> 'text')
-
-				} elseif ( 'image' === $type ) {
-					if ( 'image' === $widget_name ) {
-						$setting_to_change = 'image';
-					}
-
-				} elseif ( 'url' === $type ) {
-					// L'impostazione 'link' è comune a molti widget (titolo, pulsante, immagine).
-					$setting_to_change = 'link';
-				}
-
-				if ( ! empty( $setting_to_change ) ) {
-					$widget_instance->set_settings( $setting_to_change, $value );
-				}
+			if ( empty( $key ) || ! isset( $this->overrides_map[ $key ] ) ) {
+				continue;
 			}
-		}
-		return $widget_instance;
+
+			$value        = $this->overrides_map[ $key ];
+			$widget_name  = $widget_instance->get_name();
+			$setting_name = '';
+
+			/**
+			 * Mappatura base dei widget Elementor più comuni.
+			 * Può essere ampliata se necessario.
+			 */
+			switch ( $type ) {
+				case 'text':
+				case 'textarea':
+					if ( 'heading' === $widget_name ) {
+						$setting_name = 'title';
+					} elseif ( 'text-editor' === $widget_name ) {
+						$setting_name = 'editor';
+					} elseif ( 'button' === $widget_name ) {
+						$setting_name = 'text';
+					}
+					break;
+
+				case 'image':
+					if ( 'image' === $widget_name ) {
+						$setting_name = 'image';
+						// Elementor si aspetta un array con 'url' (e opzionalmente 'id')
+						$value = [ 'url' => esc_url( $value ) ];
+					}
+					break;
+
+				case 'url':
+					// Imposta il link (molti widget lo usano)
+					$setting_name = 'link';
+					// Elementor si aspetta un array con chiave 'url'
+					$value = [ 'url' => esc_url( $value ) ];
+					break;
+			}
+
+			// Applica l’override solo se abbiamo trovato un’impostazione valida
+			if ( ! empty( $setting_name ) ) {
+				$widget_instance->set_settings( $setting_name, $value );
+			}
+    }
+
+    return $widget_instance;
 	}
 }

@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.6.0 - 16/10/2025
+
+*   Feat: add conditional control in widget
+
 ### 1.5.6 - 16/10/2025
 
 *   Feat: piccole modifiche ai controlli di class-dynamic-fields.php.
