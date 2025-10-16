@@ -4,6 +4,7 @@
 
 *   Feat: add wysiwyg control
 *   Style: nascosto button 'Aggiungi elemento' dal repeater del template
+*   Feat: spostato controlli nel tab Advanced e aggiunto hook anche per i widget container (non tutti i controlli hanno il Tab Content).
 
 ### 1.6.0 - 16/10/2025
 

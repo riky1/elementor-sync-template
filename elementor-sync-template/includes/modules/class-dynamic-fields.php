@@ -30,14 +30,15 @@ class Dynamic_Fields {
 	 *
 	 * @since 1.1.0
 	 * @since 1.2.1 fix: la classe veniva caricata per ogni componente di Elementor
+	 * @since 1.6.1 spostato controlli nel tab Advanced e aggiunto hook anche per i widget container
 	 * @access public
 	 */
 	public function __construct() {
 
-		// Aggiunge il campo per la chiave dinamica a tutti gli elementi.
-		// Questo hook viene eseguito dopo la sezione degli effetti comuni.
-		// In questo modo, il campo sarà visibile in tutte le sezioni degli elementi
-		add_action( 'elementor/element/common/section_effects/after_section_end', [ $this, 'add_dynamic_field_controls' ], 10, 2 );
+		// Aggiunge il campo per la chiave dinamica agli elementi Common e Container.
+		// Questo hook viene eseguito prima della sezione style (x i common) e layout (x i container).
+		add_action( 'elementor/element/common/_section_style/before_section_start', [ $this, 'add_dynamic_field_controls' ], 10, 2 );
+		add_action( 'elementor/element/container/section_layout/before_section_start', [ $this, 'add_dynamic_field_controls' ], 10, 2 );
 	}
 
 	/**
@@ -59,7 +60,6 @@ class Dynamic_Fields {
 
 		// Esce se l'oggetto non è un'istanza di Element_Base (es. preferenze dell'editor).
 		if ( ! $element instanceof \Elementor\Element_Base ) {
-			// console_log('Esce perché non è Element_Base');
 			return;
 		}
 
@@ -72,24 +72,20 @@ class Dynamic_Fields {
 		// Esce se il post type non è 'es_template'.
 		if ( $post_type != 'es_template' ) {
 			console_log('Esce perché non è es_template');
+
 			return;
 		}
 
-		// console_log('Aggiunge i controlli per i campi dinamici');
-
-		// Inizia una nuova sezione di controlli.
 		$element->start_controls_section(
 			'_est_dynamic_fields_section',
 			[
 				'label' => __( 'Sync Template Field', 'elementor-sync-template' ),
-				'tab'   => \Elementor\Controls_Manager::TAB_CONTENT,
+				'tab'   => \Elementor\Controls_Manager::TAB_ADVANCED,
 			]
 		);
 
-		// Aggiunge il controllo Repeater.
 		$repeater = new \Elementor\Repeater();
 
-		// Aggiunge i controlli per i campi dinamici.
 		$repeater->add_control(
 			'key',
 			[
@@ -149,13 +145,20 @@ class Dynamic_Fields {
 				'label'       => __( 'Dynamic Fields', 'elementor-sync-template' ),
 				'type'        => \Elementor\Controls_Manager::REPEATER,
 				'fields'      => $repeater->get_controls(),
-				'title_field' => '{{{ label || key || "New Field" }}}',
+				'title_field' => '{{{ label || key || "Add dynamic field" }}}',
 				'prevent_empty' => false,
 				'classes' => 'est-single-item-repeater',
+				'default' => [
+					[
+						'key'   => '',
+						'label' => '',
+						'type'  => 'text',
+						'description' => '',
+					],
+				],
 			]
 		);
 
-		// Termina la sezione di controlli.
 		$element->end_controls_section();
 
 	}
