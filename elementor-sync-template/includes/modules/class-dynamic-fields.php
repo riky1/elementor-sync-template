@@ -49,7 +49,7 @@ class Dynamic_Fields {
 	 * @since 1.3.0 convertito a repeater per campi più versatili.
 	 * @since 1.4.1 fix: la sezione veniva aggiunta anche in contesti non validi (es: modifica pagina)
 	 * @since 1.5.6 edit controls
-	 * @since 1.6.1 add wysiwyg control
+	 * @since 1.6.1 add wysiwyg control + nascosto button 'Aggiungi elemento' dal repeater
 	 * @access public
 	 * @param \Elementor\Element_Base $element L'elemento che viene modificato.
 	 */
@@ -151,6 +151,7 @@ class Dynamic_Fields {
 				'fields'      => $repeater->get_controls(),
 				'title_field' => '{{{ label || key || "New Field" }}}',
 				'prevent_empty' => false,
+				'classes' => 'est-single-item-repeater',
 			]
 		);
 

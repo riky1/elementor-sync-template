@@ -65,3 +65,11 @@
   color: var(--e-a-color-txt-muted);
   /* background-color: var(--e-a-btn-bg-disabled); */
 }
+
+/**
+ * @since 1.6.1
+ * Nasconde il pulsante "Aggiungi Elemento" per i repeater che devono avere un solo item.
+ */
+.est-single-item-repeater .elementor-repeater-add {
+	display: none;
+}

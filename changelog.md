@@ -3,6 +3,7 @@
 ### 1.6.1 - 16/10/2025
 
 *   Feat: add wysiwyg control
+*   Style: nascosto button 'Aggiungi elemento' dal repeater del template
 
 ### 1.6.0 - 16/10/2025
 
