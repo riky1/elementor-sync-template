@@ -3,10 +3,10 @@
  * Plugin Name:   Elementor Sync Template
  * Description:   Crea template riutilizzabili e sincronizzati con Elementor, con la possibilità di personalizzare i contenuti per ogni pagina.
  * Plugin URI:    https://github.com/riky1/elementor-sync-template.git
- * Version:       1.7.0
+ * Version:       1.7.1
  * Author:        riky1
  * Author URI:    https://example.com/
- * License:       GPL-2.0+
+ * License:       GPL-3.0+
  * License URI:   http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:   elementor-sync-template
  * Domain Path:   /languages
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly.
 }
 
-define( 'EST_VERSION', '1.7.0' );
+define( 'EST_VERSION', '1.7.1' );
 
 define( 'EST_PLUGIN_FILE', __FILE__ );
 define( 'EST_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );

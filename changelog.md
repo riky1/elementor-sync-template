@@ -1,5 +1,9 @@
 ### Elementor Sync Templates Changelog ###
 
+### 1.7.1 - 17/10/2025
+
+*   Aggiunto licenza GPL-3.0+ 
+
 ### 1.7.0 - 16/10/2025
 
 *   Feat: sostituito chiave per i campi dinamici da `key` a `_id`
